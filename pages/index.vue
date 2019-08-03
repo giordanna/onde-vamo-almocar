@@ -51,6 +51,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
   data() {
     return {
@@ -67,48 +69,20 @@ export default {
         'quinta-feira',
         'sexta-feira',
         'sábado'
-      ],
-      places: [
-        {
-          name: 'Vermelhinho',
-          weights: [5, 5, 5, 5, 5, 5, 5],
-          rejected: false
-        },
-        {
-          name: 'Brazuca',
-          weights: [5, 5, 5, 5, 5, 5, 5],
-          rejected: false
-        },
-        {
-          name: 'Vila Butantan',
-          weights: [5, 5, 5, 5, 5, 5, 5],
-          rejected: false
-        },
-        {
-          name: 'Rei das batidas',
-          weights: [5, 5, 5, 5, 5, 5, 5],
-          rejected: false
-        },
-        {
-          name: 'Savana',
-          weights: [5, 5, 5, 5, 5, 5, 5],
-          rejected: false
-        },
-        {
-          name: 'Panificadora Estrela',
-          weights: [5, 5, 5, 5, 5, 5, 5],
-          rejected: false
-        }
       ]
     }
   },
   computed: {
+    ...mapState(['places']),
     weekday() {
       return this.dayNames[this.weekdayNumber]
     },
     choosenPlace() {
       return this.places[this.choosenLunchIndex].name
     }
+  },
+  mounted() {
+    this.$store.commit('getPlaces')
   },
   methods: {
     findLunchPlace() {
@@ -144,20 +118,19 @@ export default {
       this.hasChosenYet = true
     },
     acceptPlace() {
-      this.places[this.choosenLunchIndex].weights[this.weekdayNumber] += 1
-      if (
-        this.places[this.choosenLunchIndex].weights[this.weekdayNumber] > 10
-      ) {
-        this.places[this.choosenLunchIndex].weights[this.weekdayNumber] = 10
-      }
+      this.$store.commit('acceptPlace', {
+        choosenLunchIndex: this.choosenLunchIndex,
+        weekdayNumber: this.weekdayNumber
+      })
+      this.$store.commit('savePlaces')
       this.hasDecided = true
     },
     rejectPlace() {
-      this.places[this.choosenLunchIndex].rejected = true
-      this.places[this.choosenLunchIndex].weights[this.weekdayNumber] -= 1
-      if (this.places[this.choosenLunchIndex].weights[this.weekdayNumber] < 1) {
-        this.places[this.choosenLunchIndex].weights[this.weekdayNumber] = 1
-      }
+      this.$store.commit('rejectPlace', {
+        choosenLunchIndex: this.choosenLunchIndex,
+        weekdayNumber: this.weekdayNumber
+      })
+      this.$store.commit('savePlaces')
       this.findLunchPlace()
     },
     refresh() {
@@ -165,10 +138,7 @@ export default {
       this.hasChosenYet = false
       this.choosenLunchIndex = -1
       this.noMorePlaces = false
-      this.places.map((place) => {
-        place.weights = [5, 5, 5, 5, 5, 5, 5]
-        place.rejected = false
-      })
+      this.$store.commit('reset')
     }
   }
 }
@@ -189,7 +159,7 @@ export default {
     'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   display: block;
   font-weight: 300;
-  font-size: 9vw;
+  font-size: 40pt;
   color: #35495e;
   padding: 0 0.5em;
   letter-spacing: 1px;
@@ -197,7 +167,7 @@ export default {
 
 .subtitle {
   font-weight: 300;
-  font-size: 5vw;
+  font-size: 20pt;
   color: #526488;
   word-spacing: 5px;
   padding: 0 0.5em;
