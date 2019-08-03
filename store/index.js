@@ -1,26 +1,63 @@
 import firebase from 'firebase/app'
-import { firebaseConfig, credentials } from '../env/environment.json'
+import { firebaseConfig } from '../env/environment.json'
 import 'firebase/firestore'
 import 'firebase/auth'
 export const strict = false
 
 firebase.initializeApp(firebaseConfig)
 
-firebase
-  .auth()
-  .signInWithEmailAndPassword(credentials.email, credentials.password)
-  .catch((error) => {
-    console.error(error.message)
-  })
-
 const db = firebase.firestore()
 
 export const state = () => ({
+  logged: false,
   places: [],
   error: null
 })
 
 export const mutations = {
+  checkUser(state) {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        state.logged = true
+      }
+    })
+  },
+  login(state, { email, password }) {
+    if (
+      firebase
+        .auth()
+        .signInWithEmailAndPassword(email, password)
+        .catch((error) => {
+          console.error(error.message)
+          state.error = {
+            type: 'login',
+            message: 'Login incorreto'
+          }
+        })
+    ) {
+      state.logged = true
+    } else {
+      state.logged = false
+      state.error = {
+        type: 'connection',
+        message: 'Sem conexão com a internet pra logar ):'
+      }
+    }
+  },
+  logout() {
+    firebase
+      .auth()
+      .signOut()
+      .then(() => {
+        state.logged = false
+      })
+      .catch(() => {
+        state.error = {
+          type: 'connection',
+          message: 'Sem conexão com a internet pra deslogar ):'
+        }
+      })
+  },
   getPlaces(state) {
     const newPlaces = []
     db.collection('places')
@@ -35,9 +72,19 @@ export const mutations = {
         })
 
         state.places = newPlaces.slice()
+        localStorage.setItem('places', JSON.stringify(state.places))
       })
       .catch((error) => {
         console.error(error)
+        if (
+          localStorage.setItem('places') !== null &&
+          localStorage.setItem('places') !== undefined
+        ) {
+          state.places = JSON.parse(localStorage.setItem('places'))
+        } else {
+          state.error =
+            'Sem conexão com a internet e sem nada salvo localmente ):'
+        }
       })
   },
   savePlaces(state) {

@@ -1,6 +1,61 @@
 <template>
   <div class="container">
+    <div class="modal" v-bind:class="{ 'is-active': loginActive }">
+      <div class="modal-background"></div>
+      <div class="modal-card">
+        <header class="modal-card-head">
+          <p class="modal-card-title">Login</p>
+          <button
+            aria-label="close"
+            class="delete"
+            @click="loginActive = false"
+          ></button>
+        </header>
+        <section class="modal-card-body">
+          <div class="field">
+            <div class="control">
+              <input
+                v-model="user.email"
+                class="input"
+                type="text"
+                placeholder="Email"
+              />
+            </div>
+          </div>
+          <div class="field">
+            <div class="control">
+              <input
+                v-model="user.password"
+                class="input"
+                type="password"
+                placeholder="Senha"
+              />
+            </div>
+          </div>
+        </section>
+        <footer class="modal-card-foot">
+          <button
+            class="button is-success"
+            type="submit"
+            @click.prevent="tryLogin"
+          >
+            Save changes
+          </button>
+          <button class="button" @click="loginActive = false">Cancel</button>
+        </footer>
+      </div>
+    </div>
     <div>
+      <button
+        v-if="!logged"
+        class="button--floating"
+        @click="loginActive = true"
+      >
+        Login
+      </button>
+      <button v-if="logged" class="button--floating" @click="tryLogout">
+        Logout
+      </button>
       <h1 class="title">Onde vamo almoçar?</h1>
       <h2 class="subtitle">App pra decidir isso por nós, porque né</h2>
       <p>
@@ -56,6 +111,11 @@ import { mapState } from 'vuex'
 export default {
   data() {
     return {
+      user: {
+        email: '',
+        password: ''
+      },
+      loginActive: false,
       weekdayNumber: new Date().getDay(),
       hasChosenYet: false,
       hasDecided: false,
@@ -73,7 +133,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['places']),
+    ...mapState(['places', 'logged', 'error']),
     weekday() {
       return this.dayNames[this.weekdayNumber]
     },
@@ -83,6 +143,7 @@ export default {
   },
   mounted() {
     this.$store.commit('getPlaces')
+    this.$store.commit('checkUser')
   },
   methods: {
     findLunchPlace() {
@@ -122,7 +183,9 @@ export default {
         choosenLunchIndex: this.choosenLunchIndex,
         weekdayNumber: this.weekdayNumber
       })
-      this.$store.commit('savePlaces')
+      if (this.logged) {
+        this.$store.commit('savePlaces')
+      }
       this.hasDecided = true
     },
     rejectPlace() {
@@ -130,7 +193,9 @@ export default {
         choosenLunchIndex: this.choosenLunchIndex,
         weekdayNumber: this.weekdayNumber
       })
-      this.$store.commit('savePlaces')
+      if (this.logged) {
+        this.$store.commit('savePlaces')
+      }
       this.findLunchPlace()
     },
     refresh() {
@@ -139,6 +204,13 @@ export default {
       this.choosenLunchIndex = -1
       this.noMorePlaces = false
       this.$store.commit('reset')
+    },
+    tryLogin() {
+      this.$store.commit('login', this.user)
+      this.loginActive = false
+    },
+    tryLogout() {
+      this.$store.commit('logout')
     }
   }
 }
@@ -152,6 +224,10 @@ export default {
   justify-content: center;
   align-items: center;
   text-align: center;
+}
+
+p {
+  font-size: 15pt;
 }
 
 .title {

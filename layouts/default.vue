@@ -24,7 +24,23 @@ html {
   margin: 0;
 }
 
+.button--floating {
+  font-size: 12pt;
+  cursor: pointer;
+  position: fixed;
+  top: 5px;
+  right: 5px;
+  display: inline-block;
+  border-radius: 4px;
+  border: 1px solid #3b8070;
+  color: #3b8070;
+  background-color: transparent;
+  text-decoration: none;
+  padding: 10px 30px;
+}
+
 .button--red {
+  font-size: 15pt;
   cursor: pointer;
   display: inline-block;
   border-radius: 4px;
@@ -41,6 +57,7 @@ html {
 }
 
 .button--green {
+  font-size: 15pt;
   cursor: pointer;
   display: inline-block;
   border-radius: 4px;
@@ -57,6 +74,7 @@ html {
 }
 
 .button--grey {
+  font-size: 15pt;
   cursor: pointer;
   display: inline-block;
   border-radius: 4px;
