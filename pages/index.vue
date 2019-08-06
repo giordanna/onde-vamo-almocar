@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <div class="modal" v-bind:class="{ 'is-active': loginActive }">
+    <div class="modal" :class="{ 'is-active': loginActive }">
       <div class="modal-background"></div>
       <div class="modal-card">
         <header class="modal-card-head">
@@ -46,16 +46,17 @@
       </div>
     </div>
     <div>
-      <button
-        v-if="!logged"
-        class="button--floating"
-        @click="loginActive = true"
-      >
-        Login
-      </button>
-      <button v-if="logged" class="button--floating" @click="tryLogout">
-        Logout
-      </button>
+      <div class="floating">
+        <NLink to="/view" class="button--green">
+          Visualizar dados
+        </NLink>
+        <div v-if="logged" class="button--green" @click="tryLogout">
+          Logout
+        </div>
+        <div v-if="!logged" class="button--green" @click="loginActive = true">
+          Login
+        </div>
+      </div>
       <h1 class="title">Onde vamo almoçar?</h1>
       <h2 class="subtitle">App pra decidir isso por nós, porque né</h2>
       <p>
@@ -66,9 +67,9 @@
         To varado de fome :/
       </p>
       <div v-if="!hasChosenYet && !noMorePlaces && !hasDecided" class="links">
-        <button class="button--grey" @click="findLunchPlace">
+        <div class="button--grey" @click="findLunchPlace">
           Eai, onde?
-        </button>
+        </div>
       </div>
       <div v-if="hasChosenYet && !noMorePlaces && !hasDecided">
         <p>
@@ -77,16 +78,16 @@
           hoje?
         </p>
         <div class="links">
-          <button class="button--green" @click="acceptPlace">Boaa</button>
-          <button class="button--red" @click="rejectPlace">Ah não véi</button>
+          <div class="button--green" @click="acceptPlace">Boaa</div>
+          <div class="button--red" @click="rejectPlace">Ah não véi</div>
         </div>
       </div>
       <div v-if="noMorePlaces">
         <p>Cabô os lugar pra escolher :/ Ce é chato demais pqp</p>
         <div class="links">
-          <button class="button--red" @click="refresh">
+          <div class="button--red" @click="refresh">
             Dá refresh aí então man kkkk
-          </button>
+          </div>
         </div>
       </div>
       <div v-if="hasDecided">
@@ -96,9 +97,9 @@
           então!!
         </p>
         <div class="links">
-          <button class="button--red" @click="refresh">
+          <div class="button--red" @click="refresh">
             ...refresh?
-          </button>
+          </div>
         </div>
       </div>
     </div>
@@ -216,7 +217,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .container {
   margin: 0 auto;
   min-height: 100vh;
@@ -252,5 +253,11 @@ p {
 
 .links {
   padding-top: 15px;
+}
+
+.floating {
+  position: fixed;
+  top: 1em;
+  right: 1em;
 }
 </style>

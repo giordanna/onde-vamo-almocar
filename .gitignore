@@ -89,3 +89,5 @@ sw.*
 
 # env folder
 /env
+
+.firebase
