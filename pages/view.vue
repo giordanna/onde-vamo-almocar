@@ -2,9 +2,7 @@
   <div class="container">
     <div>
       <div class="floating">
-        <NLink to="/" class="button--green">
-          Início
-        </NLink>
+        <NLink to="/" class="button--green">Início</NLink>
       </div>
       <h1 class="title">Lugares para almoçar</h1>
       <div class="links">
@@ -13,11 +11,18 @@
       <div>
         <div class="columns">
           <div class="column">
-            <p><strong>Nome do local</strong></p>
+            <p>
+              <strong>Nome do local</strong>
+            </p>
           </div>
           <div class="column">
             <p>
-              <strong>Chance na {{ weekday }}</strong>
+              <strong>
+                Chance n{{
+                weekdayNumber == 0 || weekdayNumber == 6 ? 'o' : 'a'
+                }}
+                {{ weekday }}
+              </strong>
             </p>
           </div>
         </div>
@@ -31,12 +36,8 @@
                 class="progress is-primary is-large"
                 :value="place.weights[weekdayNumber] * 10"
                 max="100"
-              >
-                {{ place.weights[weekdayNumber] * 10 }} %
-              </progress>
-              <p class="progress-value has-text-white">
-                {{ place.weights[weekdayNumber] * 10 }} %
-              </p>
+              >{{ place.weights[weekdayNumber] * 10 }} %</progress>
+              <p class="progress-value has-text-white">{{ place.weights[weekdayNumber] * 10 }} %</p>
             </div>
           </div>
         </div>
@@ -86,7 +87,7 @@ export default {
 <style>
 .container {
   margin: 3em auto;
-  max-width: 100%;
+  max-width: 80%;
   width: 600px;
 }
 
@@ -100,6 +101,7 @@ p {
   display: block;
   font-weight: 300;
   font-size: 40pt;
+  text-align: center;
   color: #35495e;
   letter-spacing: 1px;
 }
@@ -119,9 +121,7 @@ p {
 }
 
 .floating {
-  position: fixed;
-  top: 1em;
-  right: 1em;
+  text-align: right;
 }
 
 .progress-wrapper {
